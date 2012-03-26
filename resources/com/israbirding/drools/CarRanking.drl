@@ -1,0 +1,62 @@
+/*
+ * Copyright 2010 JBoss Inc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.israbirding.drools
+ 
+dialect "mvel"
+ 
+import function com.israbirding.drools.DroolsHelper.calculateSalary
+import com.israbirding.drools.CarRankingPromotions
+import com.israbirding.drools.Car
+import com.israbirding.drools.Employee
+import com.israbirding.drools.PromotionTrigger
+import com.israbirding.drools.Rank
+
+rule "Check if Candidate needs to be promoted to L3"
+	when
+	 $p : PromotionTrigger()
+	 $e : Employee($p.getEmployeeId() == $e.getId(),
+					 $e.getRank() == "L2", 
+					 eval($p.getDate().getTime() > $e.getLastPromotionDate().getTime()  == true ))
+	 $rank : Rank($rank.getRankId() == "L3")
+	 $car : Car($e.getCarId() == $car.getCarId())
+	 $newcar : Car($rank.getCarId()  == $rank.getCarId())
+	 $salary : 	calculateSalary($e.getBaseSalery(), $car.getCarValue(), $rank.getBaseSalary(), $newcar.getCarValue()) 
+	then
+		System.out.println( $p.getEmployeeId() + " is a candidate for promotion to L3. His previous promotion was: " +$e.getLastPromotionDate());
+		$e.setNewRank("L3")
+		$e.setNewSalary($salary)
+		$e.setNewCar($newcar.getCarId())
+	
+end
+
+rule "Check if Candidate needs to be promoted to L2"
+	when
+	 $p : PromotionTrigger()
+	 $e : Employee($p.getEmployeeId() == $e.getId(),
+					 $e.getRank() == "L1", 
+					 eval($p.getDate().getTime() > $e.getLastPromotionDate().getTime()  == true ))
+	 $rank : Rank($rank.getRankId() == "L2")
+	 $car : Car($e.getCarId() == $car.getCarId())
+	 $newcar : Car($rank.getCarId()  == $rank.getCarId())
+	 $salary : 	calculateSalary($e.getBaseSalery(), $car.getCarValue(), $rank.getBaseSalary(), $newcar.getCarValue()) 
+	then
+		System.out.println( $p.getEmployeeId() + " is a candidate for promotion to L2. His previous promotion was: " +$e.getLastPromotionDate());
+		$e.setNewRank("L3")
+		$e.setNewSalary($salary)
+		$e.setNewCar($newcar.getCarId())	
+end
+
