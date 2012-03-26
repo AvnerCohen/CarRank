@@ -7,7 +7,7 @@ public class DroolsHelper{
     	 double retSalary = 0.0;
     	 double currentTotal  = salary + carValue;
     	 double newTotal  = newBaseSalary + newCarValue;
-    	 if (currentTotal > (newTotal * 0.8) )
+    	 if (newTotal / currentTotal  <  1.2 )
     	 {
     		 retSalary = (salary - newCarValue) * 1.2;
     	 }
